@@ -15,6 +15,8 @@ export default function Home() {
   const [info, setInfo] = useState<ImageInfo | null>(null);
   const [analysis, setAnalysis] = useState<ForgeAnalysis | null>(null);
 
+  const [svg, setSvg] = useState<string | null>(null);
+
   const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
@@ -31,13 +33,9 @@ export default function Home() {
 
       console.log(result);
 
-      alert(
-        `✅ ${result.message}
+      setSvg(result.svg);
 
-File: ${result.fileName}
-Dimensione: ${(result.size / 1024).toFixed(1)} KB
-Tipo: ${result.type}`
-      );
+      alert("✅ SVG ricevuto dal backend!");
     } catch (error) {
       console.error(error);
       alert("Errore durante la vettorizzazione.");

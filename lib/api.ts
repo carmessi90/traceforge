@@ -8,5 +8,7 @@ export async function vectorize(file: File) {
     body: formData,
   });
 
-  return response.json();
+  const result = await response.json();
+
+  return result;
 }
