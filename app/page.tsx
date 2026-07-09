@@ -6,10 +6,12 @@ import Workspace from "@/components/Workspace";
 
 import { analyzeImage, ImageInfo } from "@/engine/imageAnalyzer";
 import { analyzeFile, ForgeAnalysis } from "@/engine/forgeEngine";
-import { testVectorAPI } from "@/lib/api";
+import { vectorize } from "@/lib/api";
 
 export default function Home() {
   const [image, setImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const [info, setInfo] = useState<ImageInfo | null>(null);
   const [analysis, setAnalysis] = useState<ForgeAnalysis | null>(null);
 
@@ -18,21 +20,33 @@ export default function Home() {
     height: 0,
   });
 
-  async function handleTestAPI() {
+  async function handleVectorize() {
+    if (!selectedFile) {
+      alert("Carica prima un'immagine.");
+      return;
+    }
+
     try {
-      const result = await testVectorAPI();
+      const result = await vectorize(selectedFile);
+
       console.log(result);
 
       alert(
-        `API Online!\n\n${result.message}\nVersione: ${result.version}`
+        `✅ ${result.message}
+
+File: ${result.fileName}
+Dimensione: ${(result.size / 1024).toFixed(1)} KB
+Tipo: ${result.type}`
       );
     } catch (error) {
       console.error(error);
-      alert("Errore durante la chiamata API");
+      alert("Errore durante la vettorizzazione.");
     }
   }
 
   function handleFile(file: File) {
+    setSelectedFile(file);
+
     const url = URL.createObjectURL(file);
 
     setImage(url);
@@ -72,10 +86,10 @@ export default function Home() {
 
         <div className="mb-6">
           <button
-            onClick={handleTestAPI}
-            className="rounded-lg bg-cyan-500 px-5 py-3 font-semibold hover:bg-cyan-400"
+            onClick={handleVectorize}
+            className="rounded-lg bg-green-600 px-5 py-3 font-semibold hover:bg-green-500 transition"
           >
-            🚀 Test API
+            ✨ Vectorize
           </button>
         </div>
 
@@ -86,6 +100,7 @@ export default function Home() {
           dimensions={dimensions}
           onSelect={handleFile}
         />
+
       </section>
     </main>
   );
